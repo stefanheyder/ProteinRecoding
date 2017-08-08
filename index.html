@@ -11,23 +11,58 @@
         <label for="sequence" class="col-sm-2 control-label">Sequenz</label>
         
         <div class="col-sm-10">
-            <textarea id="sequence" class="form-control" rows="3"></textarea>
+            <textarea id="sequence" class="form-control" rows="20"></textarea>
             <input id="code" class="btn btn-default" type="button" value="Umkodierung">
         </div>
 
         <label for="groupcoding" class="col-sm-2 control-label">Gruppenkodierung</label>
         
         <div class="col-sm-10">
-            <textarea id="groupcoding" class="form-control" readonly></textarea>
+            <textarea id="groupcoding" class="form-control" rows=20" readonly></textarea>
             <input class="btn btn-default" type="button" value="Umkodierung">
         </div>
     </div>
 
-
     <script>
+    const groupBelongings = {
+        "A": "U",
+        "L": "U",
+        "V": "U",
+        "I": "U",
+        "M": "U",
+
+        "F": "J",
+        "W": "J",
+
+        "S": "O",
+        "T": "O",
+        "Y": "O",
+        "C": "O",
+        "N": "O",
+        "Q": "O",
+
+        "R": "B",
+        "K": "B",
+        "H": "B",
+
+        "D": "Z",
+        "E": "Z",
+
+        "P": "X",
+        "G": "X",
+    };
+
+    function recode(sequence) {
+        const asArray = sequence.split("");
+        return asArray
+            .filter(c => groupBelongings[c])
+            .map(c => groupBelongings[c])
+            .join("");
+    }
     
     document.getElementById("code").onclick = () => {
         const value = document.getElementById("sequence").value;
+        document.getElementById("groupcoding").value = recode(value);
     };
     </script>
 </body>

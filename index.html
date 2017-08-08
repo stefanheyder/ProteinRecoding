@@ -68,12 +68,23 @@
         "X": "P"
     };
 
+    function sanitize(array, coding) {
+        return array.filter(x => coding[x]);
+    }
+
+    function applyCoding(array, coding) {
+        return array.map(c => coding[c]);
+    }
+
     function recode(sequence, coding) {
         const asArray = sequence.split("");
-        return asArray
-            .filter(c => coding[c])
-            .map(c => coding[c])
-            .join("");
+        const recodedArray = applyCoding(sanitize(asArray, coding), coding);
+        return recodedArray.join("");
+    }
+
+    function frequencies(sequence) {
+        const asArray = sequence.split("");
+        return asArray.reduce((acc, val) => {acc[val] = acc[val] ? acc[val] + 1 : 1; return acc}, {});
     }
     
     document.getElementById("codeToGroups").onclick = () => {

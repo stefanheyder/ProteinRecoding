@@ -12,18 +12,25 @@
         
         <div class="col-sm-10">
             <textarea id="sequence" class="form-control" rows="12"></textarea>
-            <input id="code" class="btn btn-default" type="button" value="Umkodierung">
+            <input id="codeToGroups" class="btn btn-default" type="button" value="Umkodierung">
         </div>
 
         <label for="groupcoding" class="col-sm-2 control-label">Gruppenkodierung</label>
         
         <div class="col-sm-10">
             <textarea id="groupcoding" class="form-control" rows="12" readonly></textarea>
-            <input class="btn btn-default" type="button" value="Umkodierung">
+            <input id="codeToRepresentants" class="btn btn-default" type="button" value="Umkodierung">
+        </div>
+        <label for="representantCoding" class="col-sm-2 control-label">Repräsentantenkodierung</label>
+        
+        <div class="col-sm-10">
+            <textarea id="representantCoding" class="form-control" rows="12" readonly></textarea>
         </div>
     </div>
 
     <script>
+
+
     const groupBelongings = {
         "A": "U",
         "L": "U",
@@ -52,17 +59,30 @@
         "G": "X",
     };
 
-    function recode(sequence) {
+    const groupRepresentants = {
+        "U": "A",
+        "J": "F",
+        "O": "Q",
+        "B": "H",
+        "Z": "D",
+        "X": "P"
+    };
+
+    function recode(sequence, coding) {
         const asArray = sequence.split("");
         return asArray
-            .filter(c => groupBelongings[c])
-            .map(c => groupBelongings[c])
+            .filter(c => coding[c])
+            .map(c => coding[c])
             .join("");
     }
     
-    document.getElementById("code").onclick = () => {
+    document.getElementById("codeToGroups").onclick = () => {
         const value = document.getElementById("sequence").value;
-        document.getElementById("groupcoding").value = recode(value);
+        document.getElementById("groupcoding").value = recode(value, groupBelongings);
+    };
+    document.getElementById("codeToRepresentants").onclick = () => {
+        const value = document.getElementById("groupcoding").value;
+        document.getElementById("representantCoding").value = recode(value, groupRepresentants);
     };
     </script>
 </body>

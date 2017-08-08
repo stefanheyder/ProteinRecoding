@@ -29,8 +29,7 @@
     </div>
 
     <script>
-
-
+    // which protein belongs to which group
     const groupBelongings = {
         "A": "U",
         "L": "U",
@@ -59,6 +58,7 @@
         "G": "X",
     };
 
+    // a representant for each group
     const groupRepresentants = {
         "U": "A",
         "J": "F",
@@ -68,28 +68,34 @@
         "X": "P"
     };
 
+    // remove characters that do not exist in the coding 
     function sanitize(array, coding) {
         return array.filter(x => coding[x]);
     }
 
+    // code each char from the array according to the new coding
     function applyCoding(array, coding) {
         return array.map(c => coding[c]);
     }
 
+    // recode a string by the new coding
     function recode(sequence, coding) {
         const asArray = sequence.split("");
         const recodedArray = applyCoding(sanitize(asArray, coding), coding);
         return recodedArray.join("");
     }
 
+    // calculate how often each char appears in the sequence
     function frequencies(sequence) {
         const asArray = sequence.split("");
         return asArray.reduce((acc, val) => {acc[val] = acc[val] ? acc[val] + 1 : 1; return acc}, {});
     }
     
+    // attach event listeners to the buttons
     document.getElementById("codeToGroups").onclick = () => {
         const value = document.getElementById("sequence").value;
         document.getElementById("groupcoding").value = recode(value, groupBelongings);
+        document.getElementById("representantCoding").value = "";
     };
     document.getElementById("codeToRepresentants").onclick = () => {
         const value = document.getElementById("groupcoding").value;

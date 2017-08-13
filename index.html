@@ -7,25 +7,51 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 </head>
 <body>
-    <div class="container">
+    <div class="container-fluid">
 
-        <label for="sequence" class="col-sm-2 control-label">Sequenz</label>
+        <label for="sequence" class="col-sm-1 control-label">Sequenz</label>
         
-        <div class="col-sm-10">
+        <div class="col-sm-3">
             <textarea id="sequence" class="form-control" rows="12"></textarea>
-            <input id="codeToGroups" class="btn btn-default" type="button" value="Umkodierung">
         </div>
 
-        <label for="groupcoding" class="col-sm-2 control-label">Gruppenkodierung</label>
+        <label for="groupcoding" class="col-sm-1 control-label">Gruppenkodierung</label>
         
-        <div class="col-sm-10">
+        <div class="col-sm-3">
             <textarea id="groupcoding" class="form-control" rows="12" readonly></textarea>
-            <input id="codeToRepresentants" class="btn btn-default" type="button" value="Umkodierung">
         </div>
-        <label for="representantCoding" class="col-sm-2 control-label">Repräsentantenkodierung</label>
+        <label for="representantCoding" class="col-sm-1 control-label">Repräsentanten</label>
         
-        <div class="col-sm-10">
+        <div class="col-sm-3">
             <textarea id="representantCoding" class="form-control" rows="12" readonly></textarea>
+        </div>
+        <div class="col-sm-12">
+            <select id="seqLength">
+                <option value="1"> 1 </option>
+                <option value="2"> 2 </option>
+                <option value="3"> 3 </option>
+                <option value="4"> 4 </option>
+                <option value="5"> 5 </option>
+                <option value="6"> 6 </option>
+                <option value="7"> 7 </option>
+                <option value="8"> 8 </option>
+                <option value="9"> 9 </option>
+                <option value="10"> 10 </option>
+            </select>
+        </div>
+        <div class="col-sm-12">
+            <table class="table table-hover"> 
+                <thead>
+                    <tr> 
+                        <th> Sequenz </th>
+                        <th> Absolute Anzahl </th>
+                        <th> Relative Häufigkeit </th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -87,20 +113,78 @@
     }
 
     // calculate how often each char appears in the sequence
-    function frequencies(sequence) {
-        const asArray = sequence.split("");
+    function frequencies(sequence, amount) {
+        const asArray = sequence.split("").filter((char, index) => index <= sequence.length - amount)
+            .map((char, index) => sequence.substring(index, index + amount));
         return asArray.reduce((acc, val) => {acc[val] = acc[val] ? acc[val] + 1 : 1; return acc}, {});
     }
     
     // attach event listeners to the buttons
-    document.getElementById("codeToGroups").onclick = () => {
+    function codeToGroups() {
         const value = document.getElementById("sequence").value;
         document.getElementById("groupcoding").value = recode(value, groupBelongings);
         document.getElementById("representantCoding").value = "";
     };
-    document.getElementById("codeToRepresentants").onclick = () => {
+
+    function codeToRepresentants () {
         const value = document.getElementById("groupcoding").value;
         document.getElementById("representantCoding").value = recode(value, groupRepresentants);
     };
+
+    function fillTable() {
+        const value = document.getElementById("groupcoding").value;
+        const sequenceLength = parseInt(document.getElementById("seqLength").value);
+        const totalSequences = value.length + 1 - sequenceLength;
+        const tableBody = document.getElementById("tableBody");
+        tableBody.innerHTML = "";
+        const freqs = frequencies(value, sequenceLength);
+
+        Object.getOwnPropertyNames(freqs)
+            .sort((a,b) => freqs[b] - freqs[a])
+            .forEach((seq) => {
+                const sequence = seq;
+                const freq = freqs[seq];
+                const relative = 100 * freq / totalSequences ;
+
+                const seqElement = document.createElement("td");
+                seqElement.innerHTML = sequence;
+
+                const freqElement = document.createElement("td");
+                freqElement.innerHTML = freq;
+
+                const relativeElement = document.createElement("td");
+                relativeElement.innerHTML = relative.toFixed(3) + "%";
+
+                const newRow = document.createElement("tr");
+                newRow.appendChild(seqElement);
+                newRow.appendChild(freqElement);
+                newRow.appendChild(relativeElement);
+
+                tableBody.appendChild(newRow);
+            });
+    };
+
+    function addEventHandler(elem, eventType, handler) {
+        if (elem.addEventListener)
+            elem.addEventListener (eventType, handler, false);
+        else if (elem.attachEvent)
+            elem.attachEvent ('on' + eventType, handler); 
+    }
+
+    function executeAll() {
+        codeToGroups();
+        codeToRepresentants();
+        fillTable();
+    }
+
+    addEventHandler(document.getElementById("sequence"), "input", () => {
+        executeAll();
+    });
+
+
+    addEventHandler(document.getElementById("seqLength"), "change", () => {
+        executeAll();
+    });
+
     </script>
 </body>
